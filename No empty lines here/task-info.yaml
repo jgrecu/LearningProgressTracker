@@ -147,9 +147,12 @@ files:
         }
     }
   learner_created: false
+- name: src/tracker/Commands.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/14396#comment
 status: Solved
 feedback:
   message: Congratulations!
   time: Thu, 10 Feb 2022 10:41:57 UTC
-record: -1
+record: 1

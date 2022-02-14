@@ -294,6 +294,21 @@ files:
         }
     }
   learner_created: false
+- name: src/tracker/Commands.java
+  visible: true
+  text: |
+    package tracker;
+
+    public enum Commands {
+        EXIT("exit"), ADD_USER("add user"), BACK("back");
+
+        public final String command;
+
+        Commands(String command) {
+            this.command = command;
+        }
+    }
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/14397#comment
 status: Unchecked
 record: -1
