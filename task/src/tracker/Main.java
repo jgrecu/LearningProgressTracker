@@ -78,7 +78,7 @@ public class Main {
     }
 
     private static boolean isEmailValid(String input) {
-        String pattern = "([\\w.-]+\\@\\w+\\.\\w+)$";
+        String pattern = "^[A-Za-z0-9.]+@[A-Za-z0-9.]+\\.\\w+$";
         return input.matches(pattern);
     }
 
