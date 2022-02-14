@@ -1,5 +1,6 @@
 package tracker;
 
+import java.util.Optional;
 import java.util.Scanner;
 
 public class Main {
@@ -34,7 +35,7 @@ public class Main {
                 break;
             }
 
-            boolean valid = checkCorrectCredentials(input);
+            boolean valid = validateCredentials(input);
             if (valid) {
                 System.out.println("The student has been added.");
                 countStudents++;
@@ -44,11 +45,8 @@ public class Main {
         System.out.printf("Total %d students have been added.%n", countStudents);
     }
 
-    private static String getCredentials(Scanner scanner) {
-        return scanner.nextLine().trim();
-    }
+    private static boolean validateCredentials(String credentials) {
 
-    private static boolean checkCorrectCredentials(String credentials) {
         if (credentials == null || credentials.isBlank()) {
             System.out.println("Incorrect credentials.");
             return false;
@@ -62,18 +60,21 @@ public class Main {
         }
 
         String firstName = parts[0];
+
         if (!isFirstNameValid(firstName)) {
             System.out.println("Incorrect first name.");
             return false;
         }
 
         String email = parts[parts.length - 1];
+
         if (!isEmailValid(email)) {
             System.out.println("Incorrect email.");
             return false;
         }
 
         String lastName = credentials.split(email)[0].strip().split("\\s+", 2)[1];
+
         if (!isLastNameValid(lastName)) {
             System.out.println("Incorrect last name.");
             return false;
