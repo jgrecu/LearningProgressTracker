@@ -48,8 +48,13 @@ public class Main {
         return scanner.nextLine().trim();
     }
 
-    private static boolean checkCorrectCredentials(String creds) {
-        String[] parts = creds.split("\\s+");
+    private static boolean checkCorrectCredentials(String credentials) {
+        if (credentials == null || credentials.isBlank()) {
+            System.out.println("Incorrect credentials.");
+            return false;
+        }
+
+        String[] parts = credentials.split("\\s+");
 
         if (parts.length < 3) {
             System.out.println("Incorrect credentials.");
@@ -68,7 +73,7 @@ public class Main {
             return false;
         }
 
-        String lastName = creds.split(email)[0].strip().split("\\s+", 2)[1];
+        String lastName = credentials.split(email)[0].strip().split("\\s+", 2)[1];
         if (!isLastNameValid(lastName)) {
             System.out.println("Incorrect last name.");
             return false;
