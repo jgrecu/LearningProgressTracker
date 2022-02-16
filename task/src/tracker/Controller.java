@@ -36,6 +36,8 @@ public class Controller {
                     System.out.println("Students:");
                     studentDatabase.getAllStudents()
                             .keySet()
+                            .stream()
+                            .sorted()
                             .forEach(System.out::println);
                     break;
                 default:

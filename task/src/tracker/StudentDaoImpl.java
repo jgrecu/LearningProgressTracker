@@ -1,7 +1,6 @@
 package tracker;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class StudentDaoImpl implements StudentDao {
@@ -9,7 +8,7 @@ public class StudentDaoImpl implements StudentDao {
     private final Map<Integer, Student> students;
 
     public StudentDaoImpl() {
-        this.students = new LinkedHashMap<>();
+        this.students = new HashMap<>();
     }
 
     @Override
