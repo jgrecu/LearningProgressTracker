@@ -1,5 +1,8 @@
 package tracker;
 
+import java.util.Collection;
+import java.util.Set;
+
 public class Points {
     private int java = 0;
     private int dsa = 0;
@@ -51,4 +54,6 @@ public class Points {
     public String toString() {
         return "Java=" + java + "; DSA=" + dsa + "; Databases=" + databases + "; Spring=" + spring;
     }
+
+    private Collection<String> test = new Set<String>();
 }
