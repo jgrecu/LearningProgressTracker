@@ -1,11 +1,12 @@
 package tracker;
 
 public enum Commands {
-    EXIT("exit"), ADD_USER("add user"), BACK("back");
+    EXIT("exit"), ADD_STUDENTS("add students"), BACK("back"), LIST("list"),
+    ADD_POINTS("add points"), FIND("find"), STATISTICS("statistics"), NOTIFY("notify");
 
-    public final String command;
+    public final String value;
 
-    Commands(String command) {
-        this.command = command;
+    Commands(String value) {
+        this.value = value;
     }
 }

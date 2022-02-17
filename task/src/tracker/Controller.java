@@ -1,22 +1,25 @@
 package tracker;
 
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Controller {
     private final Scanner scanner = new Scanner(System.in);
     private final StudentDaoImpl studentDatabase = new StudentDaoImpl();
+    private Statistics statistics = new Statistics();
+    Map<String, String> courses = Map.of(
+            "java", "Java",
+            "dsa", "DSA",
+            "databases", "Databases",
+            "spring", "Spring"
+    );
 
     public void run() {
-        String input = "";
+
         System.out.println("Learning Progress Tracker.");
         while (true) {
-            input = scanner.nextLine().toLowerCase().strip();
-            if (input.isEmpty() || input.isBlank()) {
-                System.out.println("No input.");
-                continue;
-            }
-
-            switch (input) {
+            String command = getInput();
+            switch (command) {
                 case "exit":
                     System.out.println("Bye!");
                     scanner.close();
@@ -45,9 +48,69 @@ public class Controller {
                                 .forEach(System.out::println);
                     }
                     break;
-                default:
-                    System.out.println("Unknown command!");
+                case "statistics":
+                    getStats();
                     break;
+                case "notify":
+                    sentNotification();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private void sentNotification() {
+        int counter = 0;
+        for (Map.Entry<Integer, Student> entry : studentDatabase.getAllStudents().entrySet()) {
+            if (entry.getValue().notification()) {
+                counter++;
+            }
+        }
+        System.out.printf("Total %s students have been notified.", counter);
+    }
+
+    private void getStats() {
+        System.out.println("Type the name of a course to see details or 'back' to quit:");
+        statistics.printStats();
+        while (true) {
+            String course = scanner.nextLine().trim().toLowerCase();
+            if ("back".equals(course)) {
+                break;
+            }
+            if (!courses.containsKey(course)) {
+                System.out.println("Unknown course.");
+                continue;
+            }
+            System.out.println(courses.get(course));
+            System.out.println("id    points    completed");
+
+            Map<Integer, Double> completions = studentDatabase.getAllStudents().entrySet()
+                    .stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getPoints().getCompletion(course)));
+            Map<Integer, Double> sorted = completions.entrySet().stream()
+                    .sorted(Map.Entry.<Integer, Double>comparingByValue(Comparator.reverseOrder())
+                            .thenComparing(Map.Entry.comparingByKey()))
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+            for (Map.Entry<Integer, Double> entry : sorted.entrySet()) {
+                studentDatabase.getAllStudents().get(entry.getKey()).courseStats(course);
+            }
+        }
+    }
+
+    public String getInput() {
+        while (true) {
+            String input = scanner.nextLine().toLowerCase().strip();
+
+            if (input.isEmpty() || input.isBlank()) {
+                System.out.println("No input.");
+            } else if (Arrays.stream(Commands.values())
+                    .anyMatch(command -> Objects.equals(command.value, input))) {
+                return input;
+            } else {
+                System.out.println("Unknown command!");
             }
         }
     }
@@ -121,6 +184,7 @@ public class Controller {
             Points tempPoints = new Points(javaPoints, dsaPoints, dbPoints, springPoints);
             student.setPoints(tempPoints);
             studentDatabase.updateStudent(student);
+            statistics.addTasks(studentId, javaPoints, dsaPoints, dbPoints, springPoints);
             return true;
         }
         System.out.println("Incorrect points format.");
