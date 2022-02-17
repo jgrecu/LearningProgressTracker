@@ -957,6 +957,482 @@ files:
         }
     }
   learner_created: false
+- name: src/tracker/Controller.java
+  visible: true
+  text: |
+    package tracker;
+
+    import java.util.Scanner;
+
+    public class Controller {
+        private final Scanner scanner = new Scanner(System.in);
+        private final StudentDaoImpl studentDatabase = new StudentDaoImpl();
+
+        public void run() {
+            String input = "";
+            System.out.println("Learning Progress Tracker.");
+            while (true) {
+                input = scanner.nextLine().toLowerCase().strip();
+                if (input.isEmpty() || input.isBlank()) {
+                    System.out.println("No input.");
+                    continue;
+                }
+
+                switch (input) {
+                    case "exit":
+                        System.out.println("Bye!");
+                        scanner.close();
+                        return;
+                    case "add students":
+                        addStudentsMenu(scanner);
+                        break;
+                    case "add points":
+                        addPointsMenu(scanner);
+                        break;
+                    case "back":
+                        System.out.println("Enter 'exit' to exit the program.");
+                        break;
+                    case "find":
+                        findStudentMenu(scanner);
+                        break;
+                    case "list":
+                        if (studentDatabase.getAllStudents().isEmpty()) {
+                            System.out.println("No students found.");
+                        } else {
+                            System.out.println("Students:");
+                            studentDatabase.getAllStudents()
+                                    .keySet()
+                                    .stream()
+                                    .sorted()
+                                    .forEach(System.out::println);
+                        }
+                        break;
+                    default:
+                        System.out.println("Unknown command!");
+                        break;
+                }
+            }
+        }
+
+        private void findStudentMenu(Scanner scanner) {
+            System.out.println("Enter an id or 'back' to return:");
+            String input = "";
+            while (true) {
+                input = scanner.nextLine().trim();
+                if (input.contains("back")) {
+                    break;
+                }
+                findStudent(input);
+            }
+        }
+
+        private void findStudent(String input) {
+            int id;
+            try {
+                id = Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                return;
+            }
+            Student student = studentDatabase.getStudent(id);
+            if (student == null) {
+                System.out.printf("No student is found for id=%d.%n", id);
+                return;
+            }
+            System.out.println(student);
+        }
+
+        private void addPointsMenu(Scanner scanner) {
+            System.out.println("Enter an id and points or 'back' to return:");
+            String input = "";
+            while (true) {
+                input = scanner.nextLine().trim();
+                if (input.contains("back")) {
+                    break;
+                }
+
+                boolean isAdded = addPoints(input);
+                if (isAdded) {
+                    System.out.println("Points updated.");
+                }
+
+            }
+        }
+
+        private boolean addPoints(String input) {
+            boolean isInputValid = Credentials.validatePoints(input);
+            if (isInputValid) {
+                String[] parts = input.split("\\s+");
+                int studentId;
+
+                try {
+                    studentId = Integer.parseInt(parts[0]);
+                } catch (NumberFormatException e) {
+                    System.out.printf("No student is found for id=%s.%n", parts[0]);
+                    return false;
+                }
+
+                int javaPoints = Integer.parseInt(parts[1]);
+                int dsaPoints = Integer.parseInt(parts[2]);
+                int dbPoints = Integer.parseInt(parts[3]);
+                int springPoints = Integer.parseInt(parts[4]);
+                Student student = studentDatabase.getStudent(studentId);
+                if (student == null) {
+                    System.out.printf("No student is found for id=%d.%n", studentId);
+                    return false;
+                }
+                Points tempPoints = new Points(javaPoints, dsaPoints, dbPoints, springPoints);
+                student.setPoints(tempPoints);
+                studentDatabase.updateStudent(student);
+                return true;
+            }
+            System.out.println("Incorrect points format.");
+            return false;
+        }
+
+        private void addStudentsMenu(Scanner scanner) {
+            System.out.println("Enter student credentials or 'back' to return:");
+            int countStudents = 0;
+            String input = "";
+            while (true) {
+                input = scanner.nextLine().trim();
+                if (input.contains("back")) {
+                    break;
+                }
+
+                boolean valid = Credentials.validate(input);
+                if (valid) {
+                    boolean isAdded = addStudent(input);
+                    if (isAdded) {
+                        System.out.println("The student has been added.");
+                        countStudents++;
+                    }
+                }
+            }
+
+            System.out.printf("Total %d students have been added.%n", countStudents);
+        }
+
+        private boolean addStudent(String credentials) {
+            String[] parts = credentials.split("\\s+");
+            String firstName = parts[0];
+            String email = parts[parts.length - 1];
+            String lastName = credentials.split(email)[0].strip().split("\\s+", 2)[1];
+            boolean emailExists = studentDatabase.getAllStudents()
+                    .values()
+                    .stream()
+                    .anyMatch(student -> student.getEmail().equals(email));
+            if (emailExists) {
+                System.out.println("This email is already taken.");
+                return false;
+            }
+            int studentId = studentDatabase.getNextStudentId();
+            Student student = new Student(studentId, firstName, lastName, email);
+            studentDatabase.addStudent(student);
+            return true;
+        }
+    }
+  learner_created: true
+- name: src/tracker/Student.java
+  visible: true
+  text: |
+    package tracker;
+
+    import java.util.*;
+
+    public class Student {
+        private int id;
+        private String firstName;
+        private String lastName;
+        private String email;
+        private Points points;
+
+        public Student(int id, String firstName, String lastName, String email) {
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.email = email;
+            this.id = id;
+            this.points = new Points();
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getFirstName() {
+            return firstName;
+        }
+
+        public String getLastName() {
+            return lastName;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public Points getPoints() {
+            return points;
+        }
+
+        public void setPoints(Points points) {
+            this.points.addJava(points.getJava());
+            this.points.addDsa(points.getDsa());
+            this.points.addDatabases(points.getDatabases());
+            this.points.addSpring(points.getSpring());
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Student student = (Student) o;
+            return id == student.id && firstName.equals(student.firstName) && lastName.equals(student.lastName) && email.equals(student.email);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(id, firstName, lastName, email);
+        }
+
+        @Override
+        public String toString() {
+            return id + " points: " + points;
+        }
+    }
+  learner_created: true
+- name: src/tracker/StudentDao.java
+  visible: true
+  text: |
+    package tracker;
+
+    import java.util.List;
+    import java.util.Map;
+
+    public interface StudentDao {
+        public Map<Integer, Student> getAllStudents();
+        public Student getStudent(int studentID);
+        public void addStudent(Student student);
+        public void updateStudent(Student student);
+    }
+  learner_created: true
+- name: src/tracker/Points.java
+  visible: true
+  text: |
+    package tracker;
+
+    import java.util.Collection;
+    import java.util.Objects;
+    import java.util.Set;
+
+    public class Points {
+        private int java = 0;
+        private int dsa = 0;
+        private int databases = 0;
+        private int spring = 0;
+
+        public Points() {}
+
+        public Points(int java, int dsa, int databases, int spring) {
+            this.java = java;
+            this.dsa = dsa;
+            this.databases = databases;
+            this.spring = spring;
+        }
+
+        public int getJava() {
+            return java;
+        }
+
+        public void addJava(int java) {
+            this.java += java;
+        }
+
+        public int getDsa() {
+            return dsa;
+        }
+
+        public void addDsa(int dsa) {
+            this.dsa += dsa;
+        }
+
+        public int getDatabases() {
+            return databases;
+        }
+
+        public void addDatabases(int databases) {
+            this.databases += databases;
+        }
+
+        public int getSpring() {
+            return spring;
+        }
+
+        public void addSpring(int spring) {
+            this.spring += spring;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Points)) return false;
+            Points points = (Points) o;
+            return java == points.java && dsa == points.dsa && databases == points.databases && spring == points.spring;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(java, dsa, databases, spring);
+        }
+
+        @Override
+        public String toString() {
+            return "Java=" + java + "; DSA=" + dsa + "; Databases=" + databases + "; Spring=" + spring;
+        }
+    }
+  learner_created: true
+- name: src/tracker/Commands.java
+  visible: true
+  text: |
+    package tracker;
+
+    public enum Commands {
+        EXIT("exit"), ADD_USER("add user"), BACK("back");
+
+        public final String command;
+
+        Commands(String command) {
+            this.command = command;
+        }
+    }
+  learner_created: true
+- name: src/tracker/StudentDaoImpl.java
+  visible: true
+  text: |
+    package tracker;
+
+    import java.util.HashMap;
+    import java.util.Map;
+
+    public class StudentDaoImpl implements StudentDao {
+        private int studentId = 10000;
+        private final Map<Integer, Student> students;
+
+        public StudentDaoImpl() {
+            this.students = new HashMap<>();
+        }
+
+        @Override
+        public Map<Integer, Student> getAllStudents() {
+            return new HashMap<>(students);
+        }
+
+        @Override
+        public Student getStudent(int studentID) {
+            return students.get(studentID);
+        }
+
+        @Override
+        public void addStudent(Student student) {
+            // todo: check student is not already in list
+            if (!students.containsKey(student.getId())) {
+                students.put(student.getId(), student);
+            }
+        }
+
+        @Override
+        public void updateStudent(Student student) {
+            students.put(student.getId(), student);
+        }
+
+        public int getNextStudentId() {
+            return studentId++;
+        }
+    }
+  learner_created: true
+- name: src/tracker/Credentials.java
+  visible: true
+  text: |
+    package tracker;
+
+    public class Credentials {
+
+        public static boolean validate(String credentials) {
+
+            if (credentials == null || credentials.isBlank()) {
+                System.out.println("Incorrect credentials.");
+                return false;
+            }
+
+            String[] parts = credentials.split("\\s+");
+
+            if (parts.length < 3) {
+                System.out.println("Incorrect credentials.");
+                return false;
+            }
+
+            String firstName = parts[0];
+
+            if (!isFirstNameValid(firstName)) {
+                System.out.println("Incorrect first name.");
+                return false;
+            }
+
+            String email = parts[parts.length - 1];
+
+            if (!isEmailValid(email)) {
+                System.out.println("Incorrect email.");
+                return false;
+            }
+
+            String lastName = credentials.split(email)[0].strip().split("\\s+", 2)[1];
+
+            if (!isLastNameValid(lastName)) {
+                System.out.println("Incorrect last name.");
+                return false;
+            }
+
+            return true;
+        }
+
+        public static boolean validatePoints(String points) {
+            if (points == null || points.isBlank()) {
+                return false;
+            }
+
+            String[] parts = points.split("\\s+");
+            if (parts.length != 5) {
+                return false;
+            }
+
+            for (int i = 1; i < parts.length; i++) {
+                try {
+                    int test = Integer.parseInt(parts[i]);
+                    if (test < 0) {
+                        return false;
+                    }
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private static boolean isEmailValid(String input) {
+            String pattern = "^[A-Za-z0-9.]+@[A-Za-z0-9.]+\\.\\w+$";
+            return input.matches(pattern);
+        }
+
+        private static boolean isFirstNameValid(String input) {
+            String pattern = "^(([A-Za-z]{2,})|([A-Za-z]+[\\-'][A-Za-z]+))+$";
+            return input.matches(pattern);
+        }
+
+        private static boolean isLastNameValid(String input) {
+            String pattern = "^(([A-Za-z]{2,})|([A-Za-z]+[\\-'\\s][A-Za-z]+)[\\s-]*)+$";
+            return input.matches(pattern);
+        }
+    }
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/14399#comment
 status: Unchecked
 record: -1
