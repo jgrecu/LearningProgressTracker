@@ -54,6 +54,4 @@ public class Points {
     public String toString() {
         return "Java=" + java + "; DSA=" + dsa + "; Databases=" + databases + "; Spring=" + spring;
     }
-
-    private Collection<String> test = new Set<String>();
 }

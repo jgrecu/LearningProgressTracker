@@ -27,23 +27,6 @@ files:
         useJUnitPlatform()
     }
   learner_created: false
-- name: test/tracker/SampleTest.java
-  visible: true
-  text: |
-    package tracker;
-
-    import org.junit.jupiter.api.Test;
-
-    import static org.junit.jupiter.api.Assertions.*;
-
-    public class SampleTest {
-
-        @Test
-        void test() {
-            assertEquals(5, 2 + 3);
-        }
-    }
-  learner_created: false
 - name: test/LearningProgressTrackerTest.java
   visible: false
   text: |
@@ -723,6 +706,32 @@ files:
 - name: test/tracker/CredentialsTest.java
   visible: true
   learner_created: true
+- name: test/tracker/PointsTest.java
+  visible: true
+  learner_created: true
+- name: test/tracker/StudentTest.java
+  visible: true
+  learner_created: true
+- name: test/tracker/StudentDaoImplTest.java
+  visible: true
+  learner_created: true
+- name: test/tracker/SampleTest.java
+  visible: true
+  text: |
+    package tracker;
+
+    import org.junit.jupiter.api.Test;
+
+    import static org.junit.jupiter.api.Assertions.*;
+
+    public class SampleTest {
+
+        @Test
+        void test() {
+            assertEquals(5, 2 + 3);
+        }
+    }
+  learner_created: false
 feedback_link: https://hyperskill.org/learn/step/14398#comment
 status: Unchecked
 record: -1
