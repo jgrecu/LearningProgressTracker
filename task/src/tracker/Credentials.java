@@ -41,12 +41,16 @@ public class Credentials {
     }
 
     public static boolean validatePoints(String points) {
-        String[] parts = points.split("\\s+");
-        if (parts.length > 5) {
+        if (points == null || points.isBlank()) {
             return false;
         }
 
-        for (int i = 0; i < parts.length; i++) {
+        String[] parts = points.split("\\s+");
+        if (parts.length != 5) {
+            return false;
+        }
+
+        for (int i = 1; i < parts.length; i++) {
             try {
                 int test = Integer.parseInt(parts[i]);
                 if (test < 0) {

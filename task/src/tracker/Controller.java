@@ -13,6 +13,7 @@ public class Controller {
             input = scanner.nextLine().toLowerCase().strip();
             if (input.isEmpty() || input.isBlank()) {
                 System.out.println("No input.");
+                continue;
             }
 
             switch (input) {
@@ -33,12 +34,16 @@ public class Controller {
                     findStudentMenu(scanner);
                     break;
                 case "list":
-                    System.out.println("Students:");
-                    studentDatabase.getAllStudents()
-                            .keySet()
-                            .stream()
-                            .sorted()
-                            .forEach(System.out::println);
+                    if (studentDatabase.getAllStudents().isEmpty()) {
+                        System.out.println("No students found.");
+                    } else {
+                        System.out.println("Students:");
+                        studentDatabase.getAllStudents()
+                                .keySet()
+                                .stream()
+                                .sorted()
+                                .forEach(System.out::println);
+                    }
                     break;
                 default:
                     System.out.println("Unknown command!");
@@ -95,7 +100,15 @@ public class Controller {
         boolean isInputValid = Credentials.validatePoints(input);
         if (isInputValid) {
             String[] parts = input.split("\\s+");
-            int studentId = Integer.parseInt(parts[0]);
+            int studentId;
+
+            try {
+                studentId = Integer.parseInt(parts[0]);
+            } catch (NumberFormatException e) {
+                System.out.printf("No student is found for id=%s.%n", parts[0]);
+                return false;
+            }
+
             int javaPoints = Integer.parseInt(parts[1]);
             int dsaPoints = Integer.parseInt(parts[2]);
             int dbPoints = Integer.parseInt(parts[3]);

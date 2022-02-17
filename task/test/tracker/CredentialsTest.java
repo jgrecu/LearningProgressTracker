@@ -2,6 +2,9 @@ package tracker;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,35 +26,32 @@ class CredentialsTest {
         assertFalse(result);
     }
 
-    @Test
-    @DisplayName("Validate correct points")
-    void validateCorrectPoints() {
-        String valid = "10000 10 2 2 2";
-        boolean result = Credentials.validatePoints(valid);
+    @ParameterizedTest(name = "{index} test for null and/or empty credentials")
+    @NullAndEmptySource
+    void validateBadCredentials2(String arg) {
+        boolean result = Credentials.validate(arg);
+        assertFalse(result);
+    }
+
+
+    @ParameterizedTest
+    @ValueSource(strings = {"25841 4 10 5 0", "28405 0 8 7 5", "10010 1 5 2 2", "10001 20 10 2 2"})
+    void validateCorrectPoints(String arg) {
+        boolean result = Credentials.validatePoints(arg);
         assertTrue(result);
     }
 
-    @Test
-    @DisplayName("It should fail as more than five parts")
-    void validateWrongPoints() {
-        String invalid = "10000 7 7 7 7 7";
-        boolean result =  Credentials.validatePoints(invalid);
+    @ParameterizedTest
+    @ValueSource(strings = {"10000 7 7 7 7 7", "10000 -1 2 2 2", "10000 1 ? 2 2", "10000 ? 10 -2 2"})
+    void validateWrongPoints(String arg) {
+        boolean result = Credentials.validatePoints(arg);
         assertFalse(result);
     }
 
-    @Test
-    @DisplayName("It should fail as one of the point value is negative")
-    void validateWrongPoints2() {
-        String invalid = "10000 -1 2 2 2";
-        boolean result =  Credentials.validatePoints(invalid);
-        assertFalse(result);
-    }
-
-    @Test
-    @DisplayName("It should fail as one of the point value is non integer")
-    void validateWrongPoints3() {
-        String invalid = "10000 1 ? 2 2";
-        boolean result =  Credentials.validatePoints(invalid);
+    @ParameterizedTest(name = "{index} test for null and/or empty points")
+    @NullAndEmptySource
+    void validateWrongPoints2(String arg) {
+        boolean result = Credentials.validatePoints(arg);
         assertFalse(result);
     }
 }
