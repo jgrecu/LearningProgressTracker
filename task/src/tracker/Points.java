@@ -39,7 +39,7 @@ public class Points {
 
     public void addDsa(int dsa) {
         this.dsa += dsa;
-        if (this.dsa >= 600 && !notifications.containsKey("DSA")) {
+        if (this.dsa >= 400 && !notifications.containsKey("DSA")) {
             notifications.put("DSA", "ready");
         }
     }
@@ -50,7 +50,7 @@ public class Points {
 
     public void addDatabases(int databases) {
         this.databases += databases;
-        if (this.databases >= 600 && !notifications.containsKey("Databases")) {
+        if (this.databases >= 480 && !notifications.containsKey("Databases")) {
             notifications.put("Databases", "ready");
         }
     }
@@ -61,7 +61,7 @@ public class Points {
 
     public void addSpring(int spring) {
         this.spring += spring;
-        if (this.spring >= 600 && !notifications.containsKey("Spring")) {
+        if (this.spring >= 550 && !notifications.containsKey("Spring")) {
             notifications.put("Spring", "ready");
         }
     }
