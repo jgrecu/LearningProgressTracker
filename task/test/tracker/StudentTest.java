@@ -1,12 +1,22 @@
 package tracker;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class StudentTest {
 
-    private Student student = new Student(10000, "John", "Smith", "jsmith@gmail.com");
+    private Student student;
+
+    @BeforeEach
+    void createStudent() {
+        int id = 10000;
+        String firstName = "John";
+        String lastName = "Smith";
+        String email = "jsmith@gmail.com";
+        student = new Student(id, firstName, lastName, email);
+    }
 
     @Test
     void getId() {
@@ -30,20 +40,17 @@ class StudentTest {
 
     @Test
     void getPoints() {
-        assertEquals(0, student.getPoints().getJava());
-        assertEquals(0, student.getPoints().getDsa());
-        assertEquals(0, student.getPoints().getDatabases());
-        assertEquals(0, student.getPoints().getSpring());
+        Points testPoints = new Points();
+        boolean result = testPoints.equals(student.getPoints());
+        assertTrue(result);
     }
 
     @Test
     void setPoints() {
-        Points points = new Points(10, 10, 10, 10);
-        student.setPoints(points);
-        assertEquals(10, student.getPoints().getJava());
-        assertEquals(10, student.getPoints().getDsa());
-        assertEquals(10, student.getPoints().getDatabases());
-        assertEquals(10, student.getPoints().getSpring());
+        Points testPoints = new Points(10, 10, 10, 10);
+        student.setPoints(testPoints);
+        boolean result = testPoints.equals(student.getPoints());
+        assertTrue(result);
     }
 
     @Test

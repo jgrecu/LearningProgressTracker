@@ -1,12 +1,23 @@
 package tracker;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class PointsTest {
 
-    private Points points = new Points(10, 10, 10, 10);
+    private Points points;
+
+    @BeforeEach
+    void createPoints() {
+        int javaPoints = 10;
+        int dsaPoints = 10;
+        int databasesPoints = 10;
+        int springPoints = 10;
+        points = new Points(javaPoints, dsaPoints, databasesPoints, springPoints);
+    }
 
     @Test
     void getJava() {

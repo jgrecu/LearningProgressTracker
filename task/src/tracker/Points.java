@@ -1,6 +1,7 @@
 package tracker;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 
 public class Points {
@@ -48,6 +49,19 @@ public class Points {
 
     public void addSpring(int spring) {
         this.spring += spring;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Points)) return false;
+        Points points = (Points) o;
+        return java == points.java && dsa == points.dsa && databases == points.databases && spring == points.spring;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(java, dsa, databases, spring);
     }
 
     @Override
